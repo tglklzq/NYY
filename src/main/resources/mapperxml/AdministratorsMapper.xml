@@ -131,4 +131,9 @@
       UpdatedAt = #{updatedat,jdbcType=TIMESTAMP}
     where AdministratorID = #{administratorid,jdbcType=INTEGER}
   </update>
+
+  <select id="selectLogin" resultMap="BaseResultMap">
+    select administrators.AdministratorEmail,administrators.AdministratorPassword,administrators.RoleID from administrators
+    where AdministratorEmail =#{administratoremail,jdbcType=VARCHAR} and AdministratorPassword =#{administratorpassword,jdbcType=VARCHAR}
+    </select>
 </mapper>
