@@ -1,8 +1,12 @@
 package org.lzq.nyy.mapper;
 
+
 import org.lzq.nyy.domain.Roles;
 
+
+
 public interface RolesMapper {
+
     int deleteByPrimaryKey(Integer roleid);
 
     int insert(Roles record);
