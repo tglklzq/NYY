@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lzq.nyy.mapper.AdminsMapper">
+  <resultMap id="BaseResultMap" type="org.lzq.nyy.domain.Admins">
+    <!--@mbg.generated-->
+    <!--@Table admins-->
+    <id column="admin_id" jdbcType="INTEGER" property="adminId" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password_hash" jdbcType="VARCHAR" property="passwordHash" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
+    <result column="role_permission_id" jdbcType="INTEGER" property="rolePermissionId" />
+    <result column="is_deleted" jdbcType="BOOLEAN" property="isDeleted" />
+    <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    admin_id, username, password_hash, email, phone_number, role_permission_id, is_deleted, 
+    deleted_at, created_at, updated_at
+  </sql>
+
+
+  <select id="selectByEmailandPasswordHash" resultMap="BaseResultMap">
+    select  email,password_hash from admins where
+      email=#{email} and password_hash=#{passwordHash}
+  </select>
+
+  <select id="selectByEmail" resultMap="BaseResultMap">
+    select email from admins where email=#{email}
+  </select>
+
+  <insert id="insertRegister">
+    insert into admins set username=#{username},password_hash=#{passwordHash},email=#{email},
+    phone_number=#{phoneNumber},role_permission_id=#{rolePermissionId},created_at=#{createdAt};
+  </insert>
+
+</mapper>

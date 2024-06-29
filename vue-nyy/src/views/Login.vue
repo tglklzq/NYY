@@ -7,6 +7,7 @@
       autocomplete="off"
       @finish="onFinish"
       @finishFailed="onFinishFailed"
+      @register="toRegister"
   >
     <a-form-item
         label="Email"
@@ -17,11 +18,11 @@
     </a-form-item>
 
     <a-form-item
-        label="Password"
-        name="password"
+        label="passwordHash"
+        name="passwordHash"
         :rules="[{ required: true, message: 'Please input your password!' }]"
     >
-      <a-input-password v-model:value="formState.password" />
+      <a-input-password v-model:value="formState.passwordHash" />
     </a-form-item>
 
 
@@ -38,7 +39,7 @@
 
       <a-col :span="8">
         <a-form-item>
-          <a-button type="primary" html-type="button">注册</a-button>
+          <a-button type="primary" html-type="button" @click="toRegister" 注册 ></a-button>
         </a-form-item>
       </a-col>
 
@@ -54,15 +55,15 @@ import { reactive } from 'vue';
 import axios from "axios";
 const formState = reactive({
   email: '',
-  password: '',
+  passwordHash: '',
   remember: false,
 });
 const onFinish = async (values) => {
-  const { email, password } = values;
+  const { email, passwordHash } = values;
   console.log('Email: ', email);
-  console.log('Password: ', password);
+  console.log('Password: ', passwordHash);
   try {
-    const response = await axios.post('/api/user/login', { email, password });
+    const response = await axios.post('/api/user/login', { email, passwordHash });
 
     // 打印出整个 response.data，确保其结构符合预期
     console.log('Response Data:', response.data);
@@ -85,4 +86,8 @@ const onFinish = async (values) => {
 const onFinishFailed = errorInfo => {
   console.log('Failed:', errorInfo);
 };
+
+const toRegister = () => {
+  console.log('toRegister');
+}
 </script>
