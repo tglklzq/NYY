@@ -23,10 +23,12 @@ import java.time.format.DateTimeFormatter;
 public class AdminsController {
     @Autowired
     private AdminsService adminsService;
+
     //加密
     public String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
+
     //解密
     public boolean verifyPassword(String password, String hashedPassword) {
         return BCrypt.checkpw(password, hashedPassword);
@@ -42,8 +44,13 @@ public class AdminsController {
         if (admins != null) {
             String storedHash = admins.getPasswordHash();
             // 验证输入的密码是否与存储的哈希值匹配
-            boolean isPasswordMatch = verifyPassword(password,storedHash);
-            response = new ApiResponse<>(200, true, "登录成功", admins);
+            boolean isPasswordMatch = verifyPassword(password, storedHash);
+            if (isPasswordMatch) {
+                response = new ApiResponse<>(200, true, "登录成功", admins);
+            } else {
+                response = new ApiResponse<>(401, false, "密码错误。", null);
+            }
+
         } else {
             System.out.println("没有查询到匹配的记录");
             response = new ApiResponse<>(401, false, "登录失败，请检查您的邮箱和密码。", null);
@@ -56,9 +63,9 @@ public class AdminsController {
     @PostMapping("/register")
     public ApiResponse<Object> register(@RequestBody AdminsVo adminsVo) {
         String createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String bcryptedPassword = hashPassword(adminsVo.getPasswordHash());
+        String bcryptPassword = hashPassword(adminsVo.getPasswordHash());
         int result = adminsService.insertRegister(adminsVo.getUsername(), adminsVo.getEmail(),
-                adminsVo.getPhoneNumber(), adminsVo.getRolePermissionId(), createdAt, bcryptedPassword);
+                adminsVo.getPhoneNumber(), adminsVo.getRolePermissionId(), createdAt, bcryptPassword);
         if (result > 0) {
             return new ApiResponse<>(200, true, "Registration successful", null);
         } else {
