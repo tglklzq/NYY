@@ -7,9 +7,9 @@
       autocomplete="off"
       @finish="onFinish"
       @finishFailed="onFinishFailed"
-      @register="toRegister"
+      id="login-form"
   >
-    <!-- 原始表单项 -->
+    <!-- 登录表单项 -->
     <a-form-item
         label="邮箱"
         name="email"
@@ -26,7 +26,7 @@
       <a-input-password v-model:value="formState.passwordHash" />
     </a-form-item>
 
-    <!-- 新增的注册表单项，初始状态隐藏 -->
+    <!-- 注册表单项，初始状态隐藏 -->
     <a-form-item
         v-if="showRegisterForm"
         label="用户名称"
@@ -58,8 +58,8 @@
             <a-button
                 v-if="!showRegisterForm"
                 type="primary"
-                html-type="submit"
-                @click="onFinish"
+                html-type="button"
+                @click="onLogin"
             >
               确定
             </a-button>
@@ -78,7 +78,7 @@
           <a-form-item>
             <a-button
                 v-if="showRegisterForm"
-                type="primary"
+                type="default"
                 html-type="button"
                 @click="cancelRegistration"
             >
@@ -91,7 +91,7 @@
           <a-form-item>
             <a-button
                 v-if="!showRegisterForm"
-                type="primary"
+                type="default"
                 html-type="button"
                 @click="toRegister"
             >
@@ -106,7 +106,7 @@
 
 <script setup>
 import { reactive, ref } from 'vue';
-import { message } from 'ant-design-vue';
+import { message } from 'ant-design-vue'; // 导入 message 对象
 import axios from 'axios';
 
 const formState = reactive({
@@ -118,6 +118,11 @@ const formState = reactive({
 });
 
 const showRegisterForm = ref(false);
+
+const onLogin = () => {
+  // 手动触发表单验证和提交
+  document.getElementById('login-form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+};
 
 const onFinish = async (values) => {
   const { email, passwordHash } = values;
@@ -153,11 +158,10 @@ const toRegister = () => {
 
 const cancelRegistration = () => {
   showRegisterForm.value = false;
-  formState.username = ''; // 清空用户名称
-  formState.phoneNumber = ''; // 清空手机号
+  resetForm(); // 取消注册时重置表单
 };
 
-const submitRegistration = async (values) => {
+const submitRegistration = async () => {
   const { username, email, passwordHash, phoneNumber } = formState;
   console.log("email:", email);
   console.log("passwordHash:", passwordHash);
@@ -173,13 +177,22 @@ const submitRegistration = async (values) => {
     });
     console.log('注册响应:', response.data);
     // 处理成功或显示消息
+
+    // 注册成功后的逻辑，例如提示用户注册成功，重置表单等
+    message.success('注册成功');
+    // 不需要再次重置表单，因为邮箱和密码已经填写到登录表单中
+    showRegisterForm.value = false; // 隐藏注册表单
   } catch (error) {
     console.error('注册失败:', error);
+    message.error('注册失败，请稍后再试');
   }
 };
 
-</script>
+const resetForm = () => {
+  // 重置表单数据
+  formState.username = '';
+  formState.phoneNumber = '';
+  formState.remember = false;
+};
 
-<style scoped>
-/* 可以在这里添加你的样式 */
-</style>
+</script>

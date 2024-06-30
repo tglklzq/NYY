@@ -2,7 +2,6 @@ package org.lzq.nyy.service.Impl;
 
 import org.apache.ibatis.session.SqlSession;
 import org.lzq.nyy.domain.Admins;
-import org.lzq.nyy.dto.ApiResponse;
 import org.lzq.nyy.mapper.AdminsMapper;
 import org.lzq.nyy.service.AdminsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,13 @@ public class AdminsServiceImpl implements AdminsService {
             // 调用接口方法
             return mapper.selectByEmailandPasswordHash(email, passwordHash);
     }
+    @Override
+    public Admins selectByEmail(String email){
+        AdminsMapper mapper = sqlSession.getMapper(AdminsMapper.class);
+        return mapper.selectByEmail(email);
+
+    }
+
 
 
 
