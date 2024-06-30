@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @RestController
 @RequestMapping("/api/user")
 public class AdminsController {
@@ -24,14 +29,8 @@ public class AdminsController {
     public ApiResponse<Object> login(@RequestBody AdminsVo adminsVo) throws JsonProcessingException {
         String email = adminsVo.getEmail();
         String password = adminsVo.getPasswordHash();
-        System.out.println("233"+email);
-        System.out.println("233"+password);
-
-        // 假设这里需要对密码进行哈希处理
-
         Admins admins = adminsService.selectEmailandPasswordHash(email, (String) password);
         ApiResponse<Object> response;
-
         if (admins != null) {
             System.out.println("这是查询出来的结果：" + admins.getEmail());
             System.out.println("这是查询出来的结果：" + admins.getPasswordHash());
@@ -47,10 +46,13 @@ public class AdminsController {
 
     @PostMapping("/register")
     public ApiResponse<Object> register(@RequestBody AdminsVo adminsVo) {
-        Admins admin = adminsService.insertRegister(adminsVo.getUsername(), adminsVo.getEmail(),
-                adminsVo.getPhoneNumber(), adminsVo.getRolePermissionId(),
-                adminsVo.getPasswordHash());
-
-        return new ApiResponse<>(200, true, "注册成功", admin.getAdminId());
+        String createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        int result = adminsService.insertRegister(adminsVo.getUsername(), adminsVo.getEmail(),
+                adminsVo.getPhoneNumber(), adminsVo.getRolePermissionId(), createdAt, adminsVo.getPasswordHash());
+        if (result > 0) {
+            return new ApiResponse<>(200, true, "Registration successful", null);
+        } else {
+            return new ApiResponse<>(500, false, "Registration failed", null);
+        }
     }
 }
