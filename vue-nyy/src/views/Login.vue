@@ -1,3 +1,25 @@
+<style scoped>
+.outer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 100px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+
+}
+
+
+
+</style>
 <template>
   <div class="outer-container">
     <div class="form-container">
@@ -60,9 +82,12 @@
 </template>
 
 <script setup>
+//导入路由器
+import  {useRouter} from "vue-router";
+let $router = useRouter();
 import { reactive, ref } from 'vue';
 import { message } from 'ant-design-vue'; // 导入 message 对象
-import axios from 'axios';
+import {$login, $register} from "@/api/login.js";
 
 const formRef = ref();
 const layout = {
@@ -89,29 +114,7 @@ const onLogin = () => {
   document.getElementById('login-form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 };
 
-const onFinish = async (values) => {
-  const { email, passwordHash } = values;
-  console.log('Email: ', email);
-  console.log('Password: ', passwordHash);
-  try {
-    const response = await axios.post('/api/user/login', { email, passwordHash });
 
-    // 打印出整个 response.data，确保其结构符合预期
-    console.log('Response Data:', response.data);
-
-    const { statusCode, success, message, data } = response.data;
-
-    if (success) {
-      console.log(message);
-      // 在这里添加登录成功后的逻辑，例如跳转到主页等
-    } else {
-      console.error(message);
-    }
-  } catch (error) {
-    // 网络请求失败或后端服务出现问题
-    console.error('登录请求失败，请稍后再试。', error);
-  }
-};
 
 const onFinishFailed = (errorInfo) => {
   console.log('Failed:', errorInfo);
@@ -126,31 +129,22 @@ const cancelRegistration = () => {
   resetForm(); // 取消注册时重置表单
 };
 
-const submitRegistration = async () => {
-  const { username, email, passwordHash, phoneNumber } = formState;
-  console.log("email:", email);
-  console.log("passwordHash:", passwordHash);
-  console.log("username:", username);
-  console.log("phoneNumber:", phoneNumber);
-
-  try {
-    const response = await axios.post('/api/user/register', {
-      email,
-      passwordHash,
-      username,
-      phoneNumber,
-    });
-    console.log('注册响应:', response.data);
-    // 处理成功或显示消息
-
-    // 注册成功后的逻辑，例如提示用户注册成功，重置表单等
-    message.success('注册成功');
-    // 不需要再次重置表单，因为邮箱和密码已经填写到登录表单中
-    showRegisterForm.value = false; // 隐藏注册表单
-  } catch (error) {
-    console.error('注册失败:', error);
-    message.error('注册失败，请稍后再试');
+const onFinish =  async (values) => {
+  let  { email, passwordHash } = values;
+  let ret = await $login({email, passwordHash});
+  if(ret){
+    //跳转到布局页
+    await $router.push("/layout");
   }
+};
+
+const submitRegistration =  () => {
+  let { username, email, passwordHash, phoneNumber } = formState;
+  $register({ username, email, passwordHash, phoneNumber });
+  // console.log("email:", email);
+  // console.log("passwordHash:", passwordHash);
+  // console.log("username:", username);
+  // console.log("phoneNumber:", phoneNumber);
 };
 
 const resetForm = () => {
@@ -162,26 +156,5 @@ const resetForm = () => {
 
 </script>
 
-<style scoped>
-.outer-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
-}
 
-.form-container {
-  width: 100%;
-  max-width: 500px;
-  padding: 100px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
-
-}
-
-
-
-</style>
 

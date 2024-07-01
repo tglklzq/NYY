@@ -15,4 +15,6 @@ public interface AdminsMapper {
                           @Param("rolePermissionId") Integer rolePermissionId,
                           @Param("createdAt") String createdAt,
                           @Param("passwordHash") String passwordHash);
+
+
 }
