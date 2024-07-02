@@ -4,35 +4,19 @@
     <a-layout-sider v-model:collapsed="collapsed" :trigger="null" collapsible>
       <!--logo-->
       <div class="logo-container">
-        <template v-if="!collapsed">
-          <div class="logo-text">酒店客房管理系统</div>
-        </template>
-        <template v-else>
-          <img class="logo-icon" src="@/icons/svg/plant.svg" alt="Icon">
-        </template>
+        <template v-if="!collapsed"><div class="logo-text">酒店客房管理系统</div></template>
+        <template v-else><img class="logo-icon" src="@/icons/svg/plant.svg" alt="Icon"></template>
       </div>
 
       <!--菜单-->
-
-      <a-menu
-          v-model:openKeys="openKeys"
-          v-model:selectedKeys="selectedKeys"
-          mode="inline"
-          theme="dark"
-
-      >
-        <a-sub-menu key="sub1">
-          <template #icon>
-            <UserOutlined />
-          </template>
-          <template #title>Navigation One</template>
-          <a-menu-item key="1">Option 5</a-menu-item>
-          <a-menu-item key="2">Option 6</a-menu-item>
-          <a-menu-item key="3">Option 7</a-menu-item>
-          <a-menu-item key="4">Option 8</a-menu-item>
+      <a-menu theme="dark" :default-selected-keys="['menu1']" mode="inline">
+        <a-sub-menu v-for="(menuItems, menuKey) in menuData" :key="menuKey" :title="menuKey">
+          <a-menu-item v-for="menuItem in menuItems" :key="menuItem">
+            {{ menuItem }}
+          </a-menu-item>
         </a-sub-menu>
       </a-menu>
-
+      <!--菜单结束-->
     </a-layout-sider>
     <!--顶部-->
     <a-layout>
@@ -47,21 +31,11 @@
             @click="() => (collapsed = !collapsed)" />
         <a-menu v-model:selectedKeys="current" mode="horizontal" theme="dark">
           <a-menu-item key="mail">
-            <template #icon>
-              <mail-outlined />
-            </template>
-            邮件
-          </a-menu-item>
+            <template #icon><mail-outlined /></template>邮件</a-menu-item>
           <a-menu-item key="message">
-            <template #icon>
-              <bell-outlined />
-            </template>
-            消息
-          </a-menu-item>
+            <template #icon><bell-outlined /></template>消息</a-menu-item>
           <a-sub-menu key="admin">
-            <template #icon>
-              <user-outlined />
-            </template>
+            <template #icon><user-outlined /></template>
             <template #title>管理员</template>
               <a-menu-item key="setting:1">个人中心</a-menu-item>
               <a-menu-item key="setting:2">修改密码</a-menu-item>
@@ -81,30 +55,25 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
-import { UserOutlined, VideoCameraOutlined, UploadOutlined,
-  MenuUnfoldOutlined, MenuFoldOutlined,BellOutlined,MailOutlined } from '@ant-design/icons-vue';
-
-
+import { defineComponent, ref, computed } from 'vue';
+import {
+  UserOutlined, BellOutlined, MailOutlined, MenuUnfoldOutlined, MenuFoldOutlined
+} from '@ant-design/icons-vue';
 
 export default defineComponent({
   components: {
-    BellOutlined,MailOutlined,
-    UserOutlined,
-    VideoCameraOutlined,
-    UploadOutlined,
-    MenuUnfoldOutlined,
-    MenuFoldOutlined,
+    UserOutlined, BellOutlined, MailOutlined, MenuUnfoldOutlined, MenuFoldOutlined
   },
   setup() {
+    const current = ref(['mail']); // 初始选中菜单项的 key
+    const collapsed = ref(false); // 左侧菜单是否折叠的状态
+    const menuData = JSON.parse(sessionStorage.getItem('menu')) || {}; // 从会话存储中获取菜单数据
+    let json = JSON.stringify(menuData);
+    console.log(json);
     return {
-      //顶部菜单选中key
-      current:ref(['mail']),
-      //左侧菜单展开的选项
-      openKeys:ref(['sub1']),
-      selectedKeys: ref(['1']),
-      //左侧菜单是否折叠
-      collapsed: ref(false),
+      current,
+      collapsed,
+      menuData: computed(() => menuData)
     };
   },
 });
@@ -115,7 +84,6 @@ export default defineComponent({
   width: 100vw;
   height: 100vh;
   .header{
-    background: #fff;
     padding: 0;
     display: flex;
     justify-content: space-between;

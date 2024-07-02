@@ -1,7 +1,8 @@
 package org.lzq.nyy.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.lzq.nyy.config.MenuConfig;
 import org.lzq.nyy.domain.Admins;
 import org.lzq.nyy.dto.ApiResponse;
 import org.lzq.nyy.service.AdminsService;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -39,29 +41,32 @@ public class AdminsController {
     public ApiResponse<Object> login(@RequestBody AdminsVo adminsVo) throws JsonProcessingException {
         String email = adminsVo.getEmail();
         String password = adminsVo.getPasswordHash();
-        // 根据邮箱查询数据库中存储的哈希密码
         Admins admins = adminsService.selectByEmail(email);
         ApiResponse<Object> response;
         if (admins != null) {
             String storedHash = admins.getPasswordHash();
-            // 验证输入的密码是否与存储的哈希值匹配
             boolean isPasswordMatch = verifyPassword(password, storedHash);
             if (isPasswordMatch) {
-                String token = JwtTokenUtil.generateToken(email); // 生成 token
-                //System.out.println("token"+token);
-                response = new ApiResponse<>(200, true, "登录成功", null,token);
+                String token = JwtTokenUtil.generateToken(email);
+                int rolePermissionId = admins.getRolePermissionId();
+                List<String> menus = MenuConfig.ROLE_MENU_MAP.get(rolePermissionId);
+                Map<String, List<String>> menuDetails = new LinkedHashMap<>();
+                if (menus != null) {
+                    for (String menu : menus) {
+                        menuDetails.put(menu, MenuConfig.MENU_ITEMS.get(menu));
+                    }
+                }
+                System.out.println(menuDetails);
+                response = new ApiResponse<>(200, true, "登录成功", menuDetails, token);
             } else {
-                response = new ApiResponse<>(401, false, "密码错误。", null,null);
+                response = new ApiResponse<>(401, false, "密码错误。", null, null);
             }
-
         } else {
-            System.out.println("没有查询到匹配的记录");
-            response = new ApiResponse<>(401, false, "登录失败，请检查您的邮箱和密码。", null,null);
+            response = new ApiResponse<>(401, false, "登录失败，请检查您的邮箱和密码。", null, null);
         }
-        // 打印返回的 JSON 数据
-        //System.out.println(new ObjectMapper().writeValueAsString(response));
         return response;
     }
+
 
     @PostMapping("/register")
     public ApiResponse<Object> register(@RequestBody AdminsVo adminsVo) {

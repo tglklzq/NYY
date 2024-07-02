@@ -27,7 +27,7 @@
   </select>
 
   <select id="selectByEmail" resultMap="BaseResultMap">
-    select email,password_hash from admins where email=#{email}
+    select email,password_hash,role_permission_id from admins where email=#{email}
   </select>
 
   <insert id="insertRegister">
