@@ -15,6 +15,14 @@
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
   </resultMap>
+
+  <resultMap id="BaseAdminsResult" type="org.lzq.nyy.dto.AdminsDTO">
+  <result column="username" jdbcType="VARCHAR" property="username" />
+  <result column="email" jdbcType="VARCHAR" property="email" />
+  <result column="phone_number" jdbcType="VARCHAR" property="phone_number" />
+  <result column="role_permission_id" jdbcType="INTEGER" property="role_permission_id" />
+  </resultMap>
+
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     admin_id, username, password_hash, email, phone_number, role_permission_id, is_deleted, 
@@ -35,7 +43,22 @@
     values (#{username}, #{passwordHash}, #{email}, #{phoneNumber}, #{rolePermissionId}, #{createdAt})
   </insert>
 
+  <update id="updateByPrimaryKey" parameterType="org.lzq.nyy.domain.Admins">
+    <!--@mbg.generated-->
+    update admins
+    set username = #{username,jdbcType=VARCHAR},
+    password_hash = #{passwordHash,jdbcType=VARCHAR},
+    email = #{email,jdbcType=VARCHAR},
+    phone_number = #{phoneNumber,jdbcType=VARCHAR},
+    role_permission_id = #{rolePermissionId,jdbcType=INTEGER},
+    is_deleted = #{isDeleted,jdbcType=BOOLEAN},
+    deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+    created_at = #{createdAt,jdbcType=TIMESTAMP},
+    updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where admin_id = #{adminId,jdbcType=INTEGER}
+  </update>
 
-
-
+  <select id="showAlladmins" resultMap="BaseAdminsResult">
+    select username,email,role_permission_id,phone_number from admins
+  </select>
 </mapper>

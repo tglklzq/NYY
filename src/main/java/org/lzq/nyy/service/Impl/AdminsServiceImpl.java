@@ -2,10 +2,13 @@ package org.lzq.nyy.service.Impl;
 
 import org.apache.ibatis.session.SqlSession;
 import org.lzq.nyy.domain.Admins;
+import org.lzq.nyy.dto.AdminsDTO;
 import org.lzq.nyy.mapper.AdminsMapper;
 import org.lzq.nyy.service.AdminsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AdminsServiceImpl implements AdminsService {
@@ -33,8 +36,12 @@ public class AdminsServiceImpl implements AdminsService {
 
     }
 
-
-
+    //更新
+    @Override
+    public Admins updateByPrimaryKey(Admins admins) {
+        AdminsMapper mapper = sqlSession.getMapper(AdminsMapper.class);
+        return mapper.updateByPrimaryKey(admins);
+    }
 
 
     //注册
@@ -43,6 +50,11 @@ public class AdminsServiceImpl implements AdminsService {
         AdminsMapper adminsMapper = sqlSession.getMapper(AdminsMapper.class);
         rolePermissionId=FinalrolePermissionId;
         return adminsMapper.insertRegister(username, email, phoneNumber, rolePermissionId, createdAt, passwordHash);
+    }
+    @Override
+    public List<AdminsDTO> showAlladmins() {
+        AdminsMapper adminsMapper = sqlSession.getMapper(AdminsMapper.class);
+        return adminsMapper.showAlladmins();
     }
 
 }

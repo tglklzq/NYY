@@ -70,13 +70,11 @@ public class AdminsController {
 
     @PostMapping("/register")
     public ApiResponse<Object> register(@RequestBody AdminsVo adminsVo) {
-
         // 检查必填字段是否为空
         if (adminsVo.getUsername().isEmpty() || adminsVo.getEmail().isEmpty() || adminsVo.getPhoneNumber().isEmpty() || adminsVo.getPasswordHash().isEmpty()) {
             return new ApiResponse<>(400, false, "字段有空", null,null);
         }
         System.out.println("这是空的"+adminsVo.getPhoneNumber());
-
         // 检查用户是否已存在
         if (adminsService.selectByEmail(adminsVo.getEmail()) != null) {
             return  new ApiResponse<>(400, false, "用户已存在", null,null);
@@ -92,5 +90,11 @@ public class AdminsController {
                 return new ApiResponse<>(500, false, "注册失败", null,null);
             }
         }
+    }
+
+    @PostMapping("/showAllusers")
+    public ApiResponse<Object> showAlladmins() {
+        System.out.println(adminsService.showAlladmins());
+        return new ApiResponse<>(200,true,"查询全部",adminsService.showAlladmins(),null);
     }
 }
