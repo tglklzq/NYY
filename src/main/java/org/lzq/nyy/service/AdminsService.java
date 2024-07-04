@@ -17,6 +17,7 @@ public interface AdminsService {
     Admins updateByPrimaryKey(Admins admins);
 
     List<AdminsDTO> showAlladmins();
+    AdminsDTO selectAdminsDTO(String email);
 
 
 }

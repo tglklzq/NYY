@@ -24,4 +24,5 @@ public interface AdminsMapper {
 
 
     List<AdminsDTO>  showAlladmins();
+    AdminsDTO selectAdminsDTO(String email);
 }

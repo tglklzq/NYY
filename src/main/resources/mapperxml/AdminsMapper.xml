@@ -21,6 +21,7 @@
   <result column="email" jdbcType="VARCHAR" property="email" />
   <result column="phone_number" jdbcType="VARCHAR" property="phone_number" />
   <result column="role_permission_id" jdbcType="INTEGER" property="role_permission_id" />
+    <result column="password_hash" jdbcType="VARCHAR" property="password_hash" />
   </resultMap>
 
   <sql id="Base_Column_List">
@@ -60,5 +61,10 @@
 
   <select id="showAlladmins" resultMap="BaseAdminsResult">
     select username,email,role_permission_id,phone_number from admins
+  </select>
+
+  <select id="selectAdminsDTO" resultMap="BaseAdminsResult">
+    select username,email,role_permission_id,phone_number,password_hash from admins
+  where email=#{email};
   </select>
 </mapper>

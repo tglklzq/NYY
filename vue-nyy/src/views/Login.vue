@@ -138,6 +138,7 @@ const onFinish =  async (values) => {
   }
 };
 
+
 const submitRegistration =  () => {
   let { username, email, passwordHash, phoneNumber } = formState;
   $register({ username, email, passwordHash, phoneNumber });

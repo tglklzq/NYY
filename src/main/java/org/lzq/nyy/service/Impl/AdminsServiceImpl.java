@@ -56,5 +56,11 @@ public class AdminsServiceImpl implements AdminsService {
         AdminsMapper adminsMapper = sqlSession.getMapper(AdminsMapper.class);
         return adminsMapper.showAlladmins();
     }
+    //登录返回用户信息
+    @Override
+    public AdminsDTO selectAdminsDTO(String email) {
+        AdminsMapper adminsMapper = sqlSession.getMapper(AdminsMapper.class);
+        return adminsMapper.selectAdminsDTO(email);
+    }
 
 }

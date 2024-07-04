@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.lzq.nyy.config.MenuConfig;
 import org.lzq.nyy.domain.Admins;
+import org.lzq.nyy.dto.AdminsDTO;
 import org.lzq.nyy.dto.ApiResponse;
+import org.lzq.nyy.dto.LoginResponse;
 import org.lzq.nyy.service.AdminsService;
 import org.lzq.nyy.util.JwtTokenUtil;
 import org.lzq.nyy.vo.AdminsVo;
@@ -41,31 +43,32 @@ public class AdminsController {
     public ApiResponse<Object> login(@RequestBody AdminsVo adminsVo) throws JsonProcessingException {
         String email = adminsVo.getEmail();
         String password = adminsVo.getPasswordHash();
-        Admins admins = adminsService.selectByEmail(email);
+        //Admins admins = adminsService.selectByEmail(email);
+        AdminsDTO admins = adminsService.selectAdminsDTO(email);
         ApiResponse<Object> response;
         if (admins != null) {
-            String storedHash = admins.getPasswordHash();
+            String storedHash = admins.getPassword_hash();
             boolean isPasswordMatch = verifyPassword(password, storedHash);
+
             if (isPasswordMatch) {
                 String token = JwtTokenUtil.generateToken(email);
-                int rolePermissionId = admins.getRolePermissionId();
-                List<String> menus = MenuConfig.ROLE_MENU_MAP.get(rolePermissionId);
-                Map<String, List<String>> menuDetails = new LinkedHashMap<>();
-                if (menus != null) {
-                    for (String menu : menus) {
-                        menuDetails.put(menu, MenuConfig.MENU_ITEMS.get(menu));
-                    }
-                }
-                System.out.println(menuDetails);
-                response = new ApiResponse<>(200, true, "登录成功", menuDetails, token);
+                int rolePermissionId = admins.getRole_permission_id();
+                List<Map<String, Object>> menuDetails = MenuConfig.getMenuForRole(rolePermissionId);
+                LoginResponse loginResponse = new LoginResponse(admins, menuDetails);
+                response = new ApiResponse<>(200, true, "登录成功", loginResponse, token);
             } else {
                 response = new ApiResponse<>(401, false, "密码错误。", null, null);
             }
-        } else {
+
+
+        }
+
+        else {
             response = new ApiResponse<>(401, false, "登录失败，请检查您的邮箱和密码。", null, null);
         }
         return response;
     }
+
 
 
     @PostMapping("/register")

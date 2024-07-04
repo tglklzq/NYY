@@ -13,13 +13,16 @@
       </div>
 
       <!-- 菜单 -->
-      <a-menu theme="dark" mode="inline" :selectedKeys="currentKeys">
-        <a-sub-menu v-for="(menuItems, menuKey) in menuData" :key="menuKey" :title="menuKey">
-          <a-menu-item v-for="menuItem in menuItems" :key="menuItem" @click="() => handleMenuClick(menuKey, menuItem)">
-            {{ menuItem }}
-          </a-menu-item>
+      <a-menu v-model:selectedKeys="selectedKeys" mode="inline" theme="light">
+        <a-sub-menu v-for="(item1, index1) in mineMenus" :key="index1">
+          <template #icon>
+            <img :src="getMenuIcon(item1.title)" alt="icon" class="menu-icon" />
+          </template>
+          <template #title>{{ item1.title }}</template>
+          <a-menu-item v-for="(item2, index2) in item1.children" :key="`${item1.title}-${index2}`">{{ item2.title }}</a-menu-item>
         </a-sub-menu>
       </a-menu>
+
     </a-layout-sider>
     <!-- 顶部 -->
     <a-layout>
@@ -38,7 +41,7 @@
             <template #title>管理员</template>
             <a-menu-item key="setting:1">个人中心</a-menu-item>
             <a-menu-item key="setting:2">修改密码</a-menu-item>
-            <a-menu-item key="setting:3">退出登录</a-menu-item>
+            <a-menu-item key="setting:3" @click="exit()">退出登录</a-menu-item>
           </a-sub-menu>
         </a-menu>
       </a-layout-header>
@@ -51,41 +54,56 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import {
-  UserOutlined, BellOutlined, MailOutlined, MenuUnfoldOutlined, MenuFoldOutlined
-} from '@ant-design/icons-vue';
-import { generateRoutesFromMenu } from '@/router/dynamicRoutes';
+import {defineComponent, ref, watchEffect} from 'vue';
+import {useRouter} from 'vue-router';
+import {BellOutlined, MailOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from '@ant-design/icons-vue';
+import SvgIcon from '@/components/SvgIcon/index.vue';
+import router from '@/router/index.js';
 
 export default defineComponent({
   components: {
-    UserOutlined, BellOutlined, MailOutlined, MenuUnfoldOutlined, MenuFoldOutlined
+    SvgIcon,
+    UserOutlined,
+    BellOutlined,
+    MailOutlined,
+    MenuUnfoldOutlined,
+    MenuFoldOutlined,
   },
   setup() {
+    const $router = useRouter();
     const collapsed = ref(false);
-    const menuData = JSON.parse(sessionStorage.getItem('menu')) || {};
-    const currentKeys = ref([]); // 初始化 currentKeys 为一个空数组
-    const router = useRouter();
+    const selectedKeys = ref(["1"]);
+    const currentKeys = ref(['']);
+    const mineMenus = ref([]);
 
-    onMounted(() => {
-      const routes = generateRoutesFromMenu(menuData);
-      routes.forEach(route => router.addRoute('layout', route));
-    });
-
-    const handleMenuClick = (menuKey, menuItem) => {
-      const path = `/${menuKey}/${menuItem}`;
-      currentKeys.value = [path]; // 更新 currentKeys 的值为数组
-      router.push(path);
+    // 退出系统
+    const exit = () => {
+      sessionStorage.clear();
+      localStorage.clear();
+    //  console.log('退出系统');
+      $router.replace('/');
     };
+
+    // 动态获取菜单图标的路径
+    const getMenuIcon = (title) => {
+      return new URL(`../icons/svg/${title}.svg`, import.meta.url).href;
+    };
+
+    // Watch sessionStorage changes
+    watchEffect(() => {
+      mineMenus.value = JSON.parse(sessionStorage.getItem('mineMenus')) || [];
+    //  console.log('mineMenus updated:', mineMenus.value);
+    });
 
     return {
       collapsed,
-      menuData,
-      currentKeys, // 返回 currentKeys
-      handleMenuClick
+      currentKeys,
+      selectedKeys,
+      mineMenus,
+      getMenuIcon,
+      exit,
     };
-  }
+  },
 });
 </script>
 
@@ -93,12 +111,14 @@ export default defineComponent({
 .layout {
   width: 100vw;
   height: 100vh;
+
   .header {
     padding: 0;
     display: flex;
     justify-content: space-between;
     background-color: #001529;
   }
+
   .logo-container {
     height: 64px;
     display: flex;
@@ -107,6 +127,7 @@ export default defineComponent({
     overflow: hidden;
     transition: width 0.2s;
   }
+
   .logo-text {
     white-space: nowrap;
     overflow: hidden;
@@ -116,11 +137,13 @@ export default defineComponent({
     line-height: 64px;
     font-size: 20px;
   }
+
   .logo-icon {
     width: 32px;
     height: 32px;
   }
 }
+
 .trigger {
   color: white;
   font-size: 18px;
@@ -128,8 +151,14 @@ export default defineComponent({
   padding: 0 24px;
   cursor: pointer;
   transition: color 0.3s;
+
   &:hover {
     color: #1890ff;
   }
+}
+
+.menu-icon {
+  width: 20px; /* 调整图标的宽度 */
+  height: 20px; /* 调整图标的高度 */
 }
 </style>
