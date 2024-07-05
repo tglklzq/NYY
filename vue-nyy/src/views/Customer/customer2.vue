@@ -6,7 +6,5 @@
 </template>
 
 <script>
-export default {
-  name: '菜单1-3',
-};
+
 </script>

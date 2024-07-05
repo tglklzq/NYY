@@ -13,13 +13,14 @@
       </div>
 
       <!-- 菜单 -->
-      <a-menu v-model:selectedKeys="selectedKeys" mode="inline" theme="light">
+      <a-menu v-model:selectedKeys="current" mode="inline" theme="light">
         <a-sub-menu v-for="(item1, index1) in mineMenus" :key="index1">
           <template #icon>
             <img :src="getMenuIcon(item1.title)" alt="icon" class="menu-icon" />
           </template>
           <template #title>{{ item1.title }}</template>
-          <a-menu-item v-for="(item2, index2) in item1.children" :key="`${item1.title}-${index2}`">{{ item2.title }}</a-menu-item>
+          <a-menu-item v-for="(item2, index2) in item1.children" @click="$router.push(item2.path)"
+                       :key="`${item1.title}-${index2}`">{{ item2.title }}</a-menu-item>
         </a-sub-menu>
       </a-menu>
 
@@ -29,11 +30,14 @@
       <a-layout-header class="header">
         <menu-unfold-outlined v-if="collapsed" class="trigger" @click="() => (collapsed = !collapsed)" />
         <menu-fold-outlined v-else class="trigger" @click="() => (collapsed = !collapsed)" />
-        <a-menu v-model:selectedKeys="currentKeys" mode="horizontal" theme="dark">
-          <a-menu-item key="mail">
+        <a-menu v-model:selectedKeys="current" mode="horizontal" theme="dark">
+          <a-menu-item key="home" @click="$router.push('/layout')">
+            <template #icon><home-outlined /></template>主页
+          </a-menu-item>
+          <a-menu-item key="mail" @click="$router.push('/mail')">
             <template #icon><mail-outlined /></template>邮件
           </a-menu-item>
-          <a-menu-item key="message">
+          <a-menu-item key="message" @click="$router.push('/message')">
             <template #icon><bell-outlined /></template>消息
           </a-menu-item>
           <a-sub-menu key="admin">
@@ -54,15 +58,16 @@
 </template>
 
 <script>
-import {defineComponent, ref, watchEffect} from 'vue';
-import {useRouter} from 'vue-router';
-import {BellOutlined, MailOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from '@ant-design/icons-vue';
+import { defineComponent, ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { HomeOutlined,BellOutlined, MailOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons-vue';
 import SvgIcon from '@/components/SvgIcon/index.vue';
-import router from '@/router/index.js';
+import router from "@/router/index.js";
 
 export default defineComponent({
   components: {
     SvgIcon,
+    HomeOutlined,
     UserOutlined,
     BellOutlined,
     MailOutlined,
@@ -72,15 +77,14 @@ export default defineComponent({
   setup() {
     const $router = useRouter();
     const collapsed = ref(false);
-    const selectedKeys = ref(["1"]);
-    const currentKeys = ref(['']);
-    const mineMenus = ref([]);
+    //const selectedKeys = ref(["1"]);
+    const current = ref(['home']);
+    let mineMenus = JSON.parse(sessionStorage.getItem('mineMenus')) || [];
 
     // 退出系统
     const exit = () => {
       sessionStorage.clear();
       localStorage.clear();
-    //  console.log('退出系统');
       $router.replace('/');
     };
 
@@ -88,23 +92,33 @@ export default defineComponent({
     const getMenuIcon = (title) => {
       return new URL(`../icons/svg/${title}.svg`, import.meta.url).href;
     };
-
-    // Watch sessionStorage changes
-    watchEffect(() => {
-      mineMenus.value = JSON.parse(sessionStorage.getItem('mineMenus')) || [];
-    //  console.log('mineMenus updated:', mineMenus.value);
+// 根据后端返回的菜单信息动态添加路由
+    onMounted(() => {
+      mineMenus.forEach(menu => {
+        menu.children.forEach(item => {
+          const [directory, filename] = item.component.split('/'); // 拆分目录名和文件名
+           $router.addRoute('layout',{
+             path: item.path,
+             name: item.name,
+             meta: { title: item.title },
+             component:  () => import(`../views/${directory}/${filename}.vue`),
+           });
+        });
+      });
     });
+
+
 
     return {
       collapsed,
-      currentKeys,
-      selectedKeys,
+      current,
       mineMenus,
       getMenuIcon,
       exit,
     };
   },
 });
+
 </script>
 
 <style scoped lang="scss">

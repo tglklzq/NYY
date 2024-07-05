@@ -20,7 +20,7 @@ export const $login = async (params) => {
             sessionStorage.setItem('token', token);
             // 将菜单数据保存到浏览器的缓存中
             sessionStorage.setItem('mineMenus', JSON.stringify(menuDetails));
-
+            //console.log(menuDetails);
             // 在请求头中更新token信息
             $setToken(token);
             //console.log(token);
