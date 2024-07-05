@@ -21,6 +21,7 @@
 
 </style>
 <template>
+  <link rel="icon" type="image/svg" href="../icons/favicon/favicon.svg">
   <div class="outer-container">
     <div class="form-container">
       <a-form

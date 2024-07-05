@@ -22,6 +22,7 @@
   <result column="phone_number" jdbcType="VARCHAR" property="phone_number" />
   <result column="role_permission_id" jdbcType="INTEGER" property="role_permission_id" />
     <result column="password_hash" jdbcType="VARCHAR" property="password_hash" />
+    <result property="role_name" column="role_name"/>
   </resultMap>
 
   <sql id="Base_Column_List">
@@ -60,11 +61,13 @@
   </update>
 
   <select id="showAlladmins" resultMap="BaseAdminsResult">
-    select username,email,role_permission_id,phone_number from admins
+    SELECT username, email, a.role_permission_id, phone_number, password_hash, rp.role_name
+    FROM admins a
+           JOIN role_permissions rp ON a.role_permission_id = rp.role_permission_id
   </select>
 
   <select id="selectAdminsDTO" resultMap="BaseAdminsResult">
     select username,email,role_permission_id,phone_number,password_hash from admins
-  where email=#{email};
+    where email=#{email};
   </select>
 </mapper>
