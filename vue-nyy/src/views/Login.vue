@@ -8,10 +8,10 @@
 }
 
 .form-container {
-  width: 100%;
+  width: 80%;
   max-width: 500px;
-  padding: 100px;
-  border-radius: 10px;
+  padding: 50px;
+  border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
 
@@ -21,15 +21,13 @@
 
 </style>
 <template>
-  <link rel="icon" type="image/svg" href="../icons/favicon/favicon.svg">
   <div class="outer-container">
     <div class="form-container">
       <a-form
           ref="formRef"
           name="basic"
           :model="formState"
-          v-bind="layout"
-          labelAlign='right'
+          labelAlign='left'
           autocomplete="off"
 
           @finish="onFinish"
@@ -39,30 +37,45 @@
 
       >
         <!-- 登录表单项 -->
-        <a-form-item label="邮箱" name="email" :rules="[{ required: true, message: '请输入邮箱!' }]">
-          <a-input v-model:value="formState.email" class="custom-input" />
+        <a-form-item label="用户邮箱" name="email">
+          <a-input v-model:value="formState.emailValue1" class="custom-input" placeholder="请输入邮箱账号">
+            <template #prefix><MailOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
+            <template #addonAfter>
+              <a-select v-model:value="formState.emailValue2" style="width: 120px">
+                <a-select-option value="@qq.com">@qq.com</a-select-option>
+                <a-select-option value="@163.com">@163.com</a-select-option>
+                <a-select-option value="@164.com">@164.com</a-select-option>
+                <a-select-option value="@165.com">@165.com</a-select-option>
+                <a-select-option value="@166.com">@166.com</a-select-option>
+              </a-select>
+            </template>
+          </a-input>
         </a-form-item>
 
-        <a-form-item label="密码" name="passwordHash" :rules="[{ required: true, message: '请输入密码!' }]">
-          <a-input-password v-model:value="formState.passwordHash" class="custom-input"/>
+        <a-form-item label="用户密码" name="passwordHash" >
+          <a-input-password v-model:value="formState.passwordHash" class="custom-input" placeholder="请输入密码">
+            <template #prefix><LockOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
+          </a-input-password>
         </a-form-item>
-
-
 
         <!-- 注册表单项，初始状态隐藏 -->
-        <a-form-item v-if="showRegisterForm" label="用户姓名" name="username" :rules="[{ required: true, message: '请输入用户名称!' }]">
-          <a-input v-model:value="formState.username" class="custom-input"/>
+        <a-form-item v-if="showRegisterForm" label="用户姓名" name="username" >
+          <a-input v-model:value="formState.username" class="custom-input" placeholder="请输入名称">
+            <template #prefix><UserOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
+          </a-input>
         </a-form-item>
 
-        <a-form-item v-if="showRegisterForm" label="手机号" name="phoneNumber" :rules="[{ required: true, message: '请输入手机号!' }]">
-          <a-input v-model:value="formState.phoneNumber" class="custom-input"/>
+        <a-form-item v-if="showRegisterForm" label="手机号码" name="phoneNumber" >
+          <a-input v-model:value="formState.phoneNumber" class="custom-input" placeholder="请输入手机号码">
+            <template #prefix><PhoneOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
+          </a-input>
         </a-form-item>
 
         <!-- 按钮行 -->
         <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
           <div class="button-container" >
 
-            <a-button v-if="!showRegisterForm" type="primary" html-type="button" @click="onLogin" class="custom-button">
+            <a-button v-if="!showRegisterForm" type="primary" html-type="button" @click="onFinish" class="custom-button">
               确定
             </a-button>
             <a-button v-if="showRegisterForm" type="primary" html-type="button" @click="submitRegistration" class="custom-button">
@@ -86,76 +99,80 @@
 //导入路由器
 import  {useRouter} from "vue-router";
 let $router = useRouter();
-import { reactive, ref } from 'vue';
-import { message } from 'ant-design-vue'; // 导入 message 对象
+import {computed, reactive, ref} from 'vue';
 import {$login, $register} from "@/api/login.js";
-
+import { LockOutlined, MailOutlined,
+  PhoneOutlined, UserOutlined } from '@ant-design/icons-vue';
+const emailValue2 = ref('@qq.com');
 const formRef = ref();
-const layout = {
-  labelCol: {
-    span: 8,
-  },
-  wrapperCol: {
-    span: 14,
-  },
-};
-
+const showRegisterForm = ref(false);
 const formState = reactive({
-  email: '',
+  emailValue1: '',
+  emailValue2: '@qq.com',
+  email: '',  // 添加 email 字段
   passwordHash: '',
   remember: false,
   username: '', // 新增的表单项
   phoneNumber: '', // 新增的表单项
 });
 
-const showRegisterForm = ref(false);
+const concatenatedEmail = computed(() => `${formState.emailValue1}${formState.emailValue2}`);
 
-const onLogin = () => {
-  // 手动触发表单验证和提交
-  document.getElementById('login-form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-};
-
-
-
-const onFinishFailed = (errorInfo) => {
-  console.log('Failed:', errorInfo);
-};
-
-const toRegister = () => {
-  showRegisterForm.value = true;
-};
-
-const cancelRegistration = () => {
-  showRegisterForm.value = false;
-  resetForm(); // 取消注册时重置表单
-};
-
-const onFinish =  async (values) => {
-  let  { email, passwordHash } = values;
-  let ret = await $login({email, passwordHash});
-  if(ret){
-    //跳转到布局页
-    await $router.push("/layout");
-  }
-};
-
-
-const submitRegistration =  () => {
-  let { username, email, passwordHash, phoneNumber } = formState;
-  $register({ username, email, passwordHash, phoneNumber });
-  // console.log("email:", email);
-  // console.log("passwordHash:", passwordHash);
-  // console.log("username:", username);
-  // console.log("phoneNumber:", phoneNumber);
-};
-
+//重置表单
 const resetForm = () => {
   // 重置表单数据
   formState.username = '';
   formState.phoneNumber = '';
   formState.remember = false;
 };
+const onFinish =  async () => {
+  let email = concatenatedEmail.value;
+  let passwordHash = formState.passwordHash;
+  if (email && passwordHash){
+    //console.log('登录:', email, passwordHash);
+    let ret = await $login({email, passwordHash});
+    if(ret){
+      //跳转到布局页
+      await $router.push("/layout");
+    }
+  }
+  else{
+    //console.log('登录:', email, passwordHash);
+    alert("请完整输入信息");
+  }
+};
+const onFinishFailed = (errorInfo) => {
+  console.log('Failed:', errorInfo);
+};
+const toRegister = () => {
+  showRegisterForm.value = true;
+};
 
+const submitRegistration =  () => {
+  let email = concatenatedEmail.value;
+  let { username, passwordHash, phoneNumber } = formState;
+  if(!email || !passwordHash || !username || !phoneNumber){
+    alert("请完整输入信息");
+  }
+  else {
+    let res =$register({ username, email, passwordHash, phoneNumber });
+    if(res){
+      //alert("注册成功");
+      showRegisterForm.value = false;
+      resetForm();
+      //onFinish();
+    }
+  }
+  // console.log("email:", email);
+  // console.log("passwordHash:", passwordHash);
+  // console.log("username:", username);
+  // console.log("phoneNumber:", phoneNumber);
+};
+
+const cancelRegistration = () => {
+  showRegisterForm.value = false;
+  resetForm(); // 取消注册时重置表单
+};
 </script>
 
 
