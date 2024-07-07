@@ -3,8 +3,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import  {$adminsList} from "@/api/adminsTable.js";
+import {ref} from 'vue';
+import {$adminsList} from "@/api/adminsTable.js";
 
 
 // 统一定义当前组件的数据
@@ -35,8 +35,7 @@ const columns = ref([
 // 加载数据的异步函数
 const loadData = async () => {
   try {
-    const data = await $adminsList({pageIndex: 1, pageSize: 10, name: ''});
-    dataSource.value = data; // 更新响应式状态
+    dataSource.value = await $adminsList({pageIndex: 1, pageSize: 10, name: ''}); // 更新响应式状态
   } catch (error) {
     console.error('加载数据失败:', error);
     // 错误处理逻辑

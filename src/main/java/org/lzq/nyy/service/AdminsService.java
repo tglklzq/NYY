@@ -5,6 +5,7 @@ import org.lzq.nyy.dto.AdminsDTO;
 import org.lzq.nyy.dto.ApiResponse;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AdminsService {
     Admins selectEmailandPasswordHash(String email, String passwordHash);
@@ -18,6 +19,7 @@ public interface AdminsService {
 
     List<AdminsDTO> showAlladmins();
     AdminsDTO selectAdminsDTO(String email);
+    AdminsDTO personalInformation(String email);
 
-
+    public List<Map<String, Object>> getAllAdminLogs();
 }

@@ -1,10 +1,13 @@
 package org.lzq.nyy.mapper;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.lzq.nyy.domain.Admins;
 import org.lzq.nyy.dto.AdminsDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AdminsMapper {
     Admins selectByEmailandPasswordHash(@Param("email") String email, @Param("passwordHash") String passwordHash);
@@ -25,4 +28,9 @@ public interface AdminsMapper {
 
     List<AdminsDTO>  showAlladmins();
     AdminsDTO selectAdminsDTO(String email);
+
+    AdminsDTO personalInformation(String email);
+
+
+
 }

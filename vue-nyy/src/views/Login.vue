@@ -16,29 +16,24 @@
   background-color: #ffffff;
 
 }
-
+.button-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 
 </style>
 <template>
+
   <div class="outer-container">
     <div class="form-container">
-      <a-form
-          ref="formRef"
-          name="basic"
-          :model="formState"
-          labelAlign='left'
-          autocomplete="off"
-
-          @finish="onFinish"
-          @finishFailed="onFinishFailed"
-          id="login-form"
-          class="custom-form"
-
-      >
+      <h1 style="text-align: center" >酒店客房管理系统</h1>
+      <a-form ref="formRef" name="basic" :model="formState" labelAlign='left'
+              autocomplete="off" @finish="onFinish" @finishFailed="onFinishFailed" id="login-form" class="custom-form">
         <!-- 登录表单项 -->
         <a-form-item label="用户邮箱" name="email">
-          <a-input v-model:value="formState.emailValue1" class="custom-input" placeholder="请输入邮箱账号">
+          <a-input v-model:value="formState.emailValue1" class="custom-input" placeholder="请输入邮箱账号" allow-clear>
             <template #prefix><MailOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
             <template #addonAfter>
               <a-select v-model:value="formState.emailValue2" style="width: 120px">
@@ -53,26 +48,26 @@
         </a-form-item>
 
         <a-form-item label="用户密码" name="passwordHash" >
-          <a-input-password v-model:value="formState.passwordHash" class="custom-input" placeholder="请输入密码">
+          <a-input-password v-model:value="formState.passwordHash" class="custom-input" placeholder="请输入密码" allow-clear>
             <template #prefix><LockOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
           </a-input-password>
         </a-form-item>
 
         <!-- 注册表单项，初始状态隐藏 -->
         <a-form-item v-if="showRegisterForm" label="用户姓名" name="username" >
-          <a-input v-model:value="formState.username" class="custom-input" placeholder="请输入名称">
+          <a-input v-model:value="formState.username" class="custom-input" placeholder="请输入名称" allow-clear>
             <template #prefix><UserOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
           </a-input>
         </a-form-item>
 
         <a-form-item v-if="showRegisterForm" label="手机号码" name="phoneNumber" >
-          <a-input v-model:value="formState.phoneNumber" class="custom-input" placeholder="请输入手机号码">
+          <a-input v-model:value="formState.phoneNumber" class="custom-input" placeholder="请输入手机号码" allow-clear>
             <template #prefix><PhoneOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
           </a-input>
         </a-form-item>
 
         <!-- 按钮行 -->
-        <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+        <a-form-item >
           <div class="button-container" >
 
             <a-button v-if="!showRegisterForm" type="primary" html-type="button" @click="onFinish" class="custom-button">
@@ -81,10 +76,10 @@
             <a-button v-if="showRegisterForm" type="primary" html-type="button" @click="submitRegistration" class="custom-button">
               提交
             </a-button>
-            <a-button style="margin-left: 10px" v-if="showRegisterForm" type="default" html-type="button" @click="cancelRegistration" class="custom-button">
+            <a-button style="margin-left: 100px" v-if="showRegisterForm" type="default" html-type="button" @click="cancelRegistration" class="custom-button">
               取消
             </a-button>
-            <a-button style="margin-left: 10px" v-if="!showRegisterForm" type="default" html-type="button" @click="toRegister" class="custom-button">
+            <a-button style="margin-left: 100px" v-if="!showRegisterForm" type="default" html-type="button" @click="toRegister" class="custom-button">
               注册
             </a-button>
 
@@ -103,7 +98,7 @@ import {computed, reactive, ref} from 'vue';
 import {$login, $register} from "@/api/login.js";
 import { LockOutlined, MailOutlined,
   PhoneOutlined, UserOutlined } from '@ant-design/icons-vue';
-const emailValue2 = ref('@qq.com');
+
 const formRef = ref();
 const showRegisterForm = ref(false);
 const formState = reactive({
@@ -160,7 +155,6 @@ const submitRegistration =  () => {
       //alert("注册成功");
       showRegisterForm.value = false;
       resetForm();
-      //onFinish();
     }
   }
   // console.log("email:", email);

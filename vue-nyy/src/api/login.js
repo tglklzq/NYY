@@ -1,4 +1,4 @@
-import {$post,$setToken,setupDynamicRoutes} from  '../utils/request'
+import {$post,$setToken} from  '../utils/request'
 import {message} from "ant-design-vue";
 
 // 登录接口
@@ -25,8 +25,7 @@ export const $login = async (params) => {
             $setToken(token);
             //console.log(token);
             //console.log(data);
-            // 动态设置路由
-            setupDynamicRoutes(data);
+
             message.success(statusMessage);
       } else {
             message.error(statusMessage);

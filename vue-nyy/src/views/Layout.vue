@@ -31,22 +31,27 @@
         <menu-unfold-outlined v-if="collapsed" class="trigger" @click="() => (collapsed = !collapsed)" />
         <menu-fold-outlined v-else class="trigger" @click="() => (collapsed = !collapsed)" />
         <a-menu v-model:selectedKeys="current" mode="horizontal" theme="dark">
+
           <a-menu-item key="home" @click="$router.push('/layout')">
             <template #icon><home-outlined /></template>主页
           </a-menu-item>
+
           <a-menu-item key="mail" @click="$router.push('/mail')">
             <template #icon><mail-outlined /></template>邮件
           </a-menu-item>
+
           <a-menu-item key="message" @click="$router.push('/message')">
             <template #icon><bell-outlined /></template>消息
           </a-menu-item>
+
           <a-sub-menu key="admin">
             <template #icon><user-outlined /></template>
             <template #title>管理员</template>
-            <a-menu-item key="setting:1">个人中心</a-menu-item>
-            <a-menu-item key="setting:2">修改密码</a-menu-item>
+            <a-menu-item key="setting:1" @click="$router.push('/personalInformation')">个人中心</a-menu-item>
+            <a-menu-item key="setting:2" @click="$router.push('/changePassword')">修改密码</a-menu-item>
             <a-menu-item key="setting:3" @click="exit()">退出登录</a-menu-item>
           </a-sub-menu>
+
         </a-menu>
       </a-layout-header>
       <!-- 主体 -->
@@ -61,12 +66,10 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { HomeOutlined,BellOutlined, MailOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons-vue';
-import SvgIcon from '@/components/SvgIcon/index.vue';
-import router from "@/router/index.js";
+
 
 export default defineComponent({
   components: {
-    SvgIcon,
     HomeOutlined,
     UserOutlined,
     BellOutlined,
@@ -101,7 +104,7 @@ export default defineComponent({
              path: item.path,
              name: item.name,
              meta: { title: item.title },
-             component:  () => import(`../views/${directory}/${filename}.vue`),
+             component:  () => import(`../views/Vertical_router/${directory}/${filename}.vue`),
            });
         });
       });

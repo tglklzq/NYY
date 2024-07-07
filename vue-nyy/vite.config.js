@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
+import {build, defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import {createSvgIconsPlugin} from "vite-plugin-svg-icons";
@@ -16,8 +16,10 @@ export default defineConfig({
       symbolId: 'icon-[dir]-[name]',
     }),
     vueJsx(),
-
   ],
+  build: {
+    outDir: 'dist' // 默认输出目录为 'dist'
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

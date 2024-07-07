@@ -11,33 +11,33 @@ public class MenuConfig {
 
     static {
         // 角色的菜单映射
-        ROLE_MENU_MAP.put(1, List.of("客户管理", "房间管理", "订单管理", "员工管理",
+        ROLE_MENU_MAP.put(1, List.of("管理员管理", "文章管理", "知识分享平台管理", "社区管理",
                 "系统管理", "系统设置", "系统日志", "系统公告"));
-        ROLE_MENU_MAP.put(2, List.of("系统管理", "系统设置", "系统日志", "系统公告"));
-        ROLE_MENU_MAP.put(3, List.of("菜单1", "菜单2", "菜单3", "菜单4", "菜单5", "菜单6", "菜单7", "菜单8"));
-        ROLE_MENU_MAP.put(4, List.of("菜单1", "菜单2", "菜单3", "菜单4", "菜单5", "菜单6", "菜单7", "菜单8"));
+//        ROLE_MENU_MAP.put(2, List.of("系统管理", "系统设置", "系统日志", "系统公告"));
+//        ROLE_MENU_MAP.put(3, List.of("菜单1", "菜单2", "菜单3", "菜单4", "菜单5", "菜单6", "菜单7", "菜单8"));
+//        ROLE_MENU_MAP.put(4, List.of("菜单1", "菜单2", "菜单3", "菜单4", "菜单5", "菜单6", "菜单7", "菜单8"));
     }
 
     public static final Map<String, List<Map<String, String>>> MENU_ITEMS = new LinkedHashMap<>(); // 使用LinkedHashMap
 
     static {
-        List<Map<String, String>> put = MENU_ITEMS.put("客户管理", List.of(
-                Map.of("title", "页面1", "component", "Customer/customer1", "name", "customer1", "path", "/customer1"),
-                Map.of("title", "页面2", "component", "Customer/customer2", "name", "customer2", "path", "/customer2"),
-                Map.of("title", "页面3", "component", "Customer/customer3", "name", "customer3", "path", "/customer3")
-
+        List<Map<String, String>> put =
+        MENU_ITEMS.put("管理员管理", List.of(
+                  Map.of("title", "管理员信息页面", "component", "Customer/customer1", "name", "customer1", "path", "/customer1"),
+                  Map.of("title", "管理员日志", "component", "Customer/customer2", "name", "customer2", "path", "/customer2")
+               //，   Map.of("title", "页面3", "component", "Customer/customer3", "name", "customer3", "path", "/customer3"),
         ));
-        MENU_ITEMS.put("房间管理", List.of(
-                Map.of("title", "页面1", "component", "Room/room1", "name", "room1", "path", "/room1"),
-                Map.of("title", "页面2", "component", "Room/room2", "name", "room2", "path", "/room2")
+        MENU_ITEMS.put("文章管理", List.of(
+                Map.of("title", "文章发布", "component", "Room/room1", "name", "room1", "path", "/room1"),
+                Map.of("title", "文章审核", "component", "Room/room2", "name", "room2", "path", "/room2")
         ));
-        MENU_ITEMS.put("订单管理", List.of(
-                Map.of("title", "页面1", "component", "Order/order1", "name", "order1", "path", "/order1"),
+        MENU_ITEMS.put("知识分享平台管理", List.of(
+                Map.of("title", "课题", "component", "Order/order1", "name", "order1", "path", "/order1"),
                 Map.of("title", "页面2", "component", "Order/order2", "name", "order2", "path", "/order2")
         ));
-        MENU_ITEMS.put("员工管理", List.of(
-                Map.of("title", "页面1", "component", "Staff/staff1", "name", "staff1", "path", "/staff1"),
-                Map.of("title", "页面2", "component", "Staff/staff2", "name", "staff2", "path", "/staff2")
+        MENU_ITEMS.put("社区管理", List.of(
+                Map.of("title", "社区帖子", "component", "Staff/staff1", "name", "staff1", "path", "/staff1"),
+                Map.of("title", "活动", "component", "Staff/staff2", "name", "staff2", "path", "/staff2")
 
         ));
         MENU_ITEMS.put("系统管理", List.of(

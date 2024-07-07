@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div>room1</div>
+233
 </template>
 
 <style scoped>
